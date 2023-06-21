@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"runtime"
+	"sync"
 	"testing"
 	"time"
 )
@@ -21,4 +22,26 @@ func TestGoroutine(t *testing.T) {
 	}
 
 	time.Sleep(1 * time.Second)
+}
+
+func TestGOMAXPROCS(t *testing.T) {
+	thrd := runtime.GOMAXPROCS(20)
+	var wg sync.WaitGroup
+	for i := 0; i < 40; i++ {
+		wg.Add(1)
+		go func() {
+			time.Sleep(2 * time.Second)
+			wg.Done()
+		}()
+	}
+
+	fmt.Println("thread:", thrd)
+
+	cpu := runtime.NumCPU()
+	fmt.Println("cpu:", cpu)
+
+	goroutine := runtime.NumGoroutine()
+	fmt.Println("goroutine:", goroutine)
+
+	wg.Wait()
 }
